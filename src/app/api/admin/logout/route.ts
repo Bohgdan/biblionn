@@ -12,5 +12,13 @@ export async function POST() {
     maxAge: 0,
     sameSite: "lax",
   });
+  response.cookies.set({
+    name: "user_id",
+    value: "",
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+  });
   return response;
 }
