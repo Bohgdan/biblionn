@@ -3,14 +3,39 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+const features = [
+  "Тисячі книг від українців",
+  "Безпечна угода",
+  "Швидка доставка",
+];
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  border: "1px solid #e8e2d9",
+  borderRadius: "10px",
+  padding: "12px 16px",
+  background: "#fafaf9",
+  fontSize: "0.95rem",
+  outline: "none",
+  transition: "border-color 0.2s, box-shadow 0.2s, background 0.2s",
+};
+
+function focusInput(e: React.FocusEvent<HTMLInputElement>) {
+  e.currentTarget.style.borderColor = "#c9a84c";
+  e.currentTarget.style.background = "white";
+  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(201,168,76,0.12)";
+}
+function blurInput(e: React.FocusEvent<HTMLInputElement>) {
+  e.currentTarget.style.borderColor = "#e8e2d9";
+  e.currentTarget.style.background = "#fafaf9";
+  e.currentTarget.style.boxShadow = "none";
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const inputClass =
-    "w-full rounded-[8px] border border-[#d1c9b8] px-[14px] py-[10px] text-base focus:border-[#c9a84c] focus:outline-none focus:ring-0 focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,35 +69,63 @@ export default function LoginPage() {
       <div
         className="hidden md:flex"
         style={{
-          flex: "0 0 40%",
-          background: "linear-gradient(135deg, #1a1f3c, #2d3561)",
+          flex: "0 0 42%",
+          background: "linear-gradient(135deg, #0f1428 0%, #1a1f3c 40%, #1e2d5c 70%, #1a1f3c 100%)",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "3rem 2rem",
+          padding: "3rem 2.5rem",
           textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>📚</div>
-        <h2
-          style={{
-            fontFamily: "var(--font-playfair)",
-            color: "white",
-            fontSize: "2.5rem",
-            margin: "0 0 0.5rem",
-          }}
-        >
-          Biblion
-        </h2>
-        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", marginBottom: "2.5rem" }}>
-          Книжковий маркет України
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {["✓ Тисячі книг від українців", "✓ Безпечна угода", "✓ Швидка доставка"].map((f) => (
-            <p key={f} style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.85rem", margin: 0 }}>
-              {f}
-            </p>
-          ))}
+        {/* Floating book decorations */}
+        <span style={{ position: "absolute", top: "8%", left: "10%", fontSize: "4rem", opacity: 0.08, transform: "rotate(-15deg)" }}>📚</span>
+        <span style={{ position: "absolute", bottom: "12%", right: "8%", fontSize: "4rem", opacity: 0.08, transform: "rotate(12deg)" }}>📖</span>
+        <span style={{ position: "absolute", top: "55%", left: "5%", fontSize: "3rem", opacity: 0.06, transform: "rotate(-8deg)" }}>📕</span>
+        <span style={{ position: "absolute", top: "20%", right: "12%", fontSize: "3rem", opacity: 0.07, transform: "rotate(20deg)" }}>📗</span>
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-playfair)",
+              color: "white",
+              fontSize: "2.5rem",
+              margin: "0 0 0.5rem",
+              fontWeight: 700,
+            }}
+          >
+            Biblion
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", marginBottom: "2.5rem" }}>
+            Книжковий маркет України
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", alignItems: "flex-start" }}>
+            {features.map((f) => (
+              <div key={f} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <div
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    background: "rgba(201,168,76,0.2)",
+                    color: "#c9a84c",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  ✓
+                </div>
+                <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.875rem" }}>{f}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -90,53 +143,119 @@ export default function LoginPage() {
       >
         <section style={{ width: "100%", maxWidth: "400px" }}>
           <header style={{ marginBottom: "2rem", textAlign: "center" }}>
-            <h1 style={{ fontFamily: "var(--font-playfair)", color: "#1a1f3c", fontSize: "2rem", margin: 0 }}>
+            <h1
+              style={{
+                fontFamily: "var(--font-playfair)",
+                color: "#1a1f3c",
+                fontSize: "2rem",
+                margin: "0 0 0.25rem",
+              }}
+            >
               Вхід
             </h1>
-            <p style={{ marginTop: "0.5rem", color: "#6b7280" }}>Раді бачити вас знову</p>
+            <p style={{ color: "#9ca3af", fontSize: "0.9rem", margin: 0 }}>Раді бачити вас знову</p>
           </header>
 
-          <form className="space-y-5" onSubmit={onSubmit}>
+          <form style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }} onSubmit={onSubmit}>
             <div>
-              <label className="mb-2 block text-sm font-medium text-[#1a1f3c]" htmlFor="email">
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontSize: "0.75rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "#1a1f3c",
+                  fontWeight: 600,
+                }}
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
                 id="email"
                 type="email"
-                className={inputClass}
+                style={inputStyle}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={focusInput}
+                onBlur={blurInput}
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-[#1a1f3c]" htmlFor="password">
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontSize: "0.75rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "#1a1f3c",
+                  fontWeight: 600,
+                }}
+                htmlFor="password"
+              >
                 Пароль
               </label>
               <input
                 id="password"
                 type="password"
-                className={inputClass}
+                style={inputStyle}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={focusInput}
+                onBlur={blurInput}
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-[8px] bg-[#1a1f3c] px-4 py-[14px] text-base uppercase tracking-[0.05em] text-white transition-all duration-200 hover:bg-[#c9a84c] hover:text-[#1a1f3c] disabled:cursor-not-allowed disabled:opacity-70"
+              style={{
+                width: "100%",
+                background: isLoading
+                  ? "#9ca3af"
+                  : "linear-gradient(135deg, #1a1f3c, #2d3561)",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                padding: "14px",
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                letterSpacing: "0.04em",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading) {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "linear-gradient(135deg, #c9a84c, #b8963e)";
+                  (e.currentTarget as HTMLButtonElement).style.color = "#1a1f3c";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading) {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "linear-gradient(135deg, #1a1f3c, #2d3561)";
+                  (e.currentTarget as HTMLButtonElement).style.color = "white";
+                }
+              }}
             >
               {isLoading ? "Завантаження..." : "Увійти"}
             </button>
 
-            {error ? <p className="text-center text-sm text-red-600">{error}</p> : null}
+            {error ? (
+              <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#dc2626", margin: 0 }}>
+                {error}
+              </p>
+            ) : null}
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
             Немає акаунту?{" "}
-            <Link href="/auth/register" className="text-[#c9a84c] hover:underline">
+            <Link href="/auth/register" style={{ color: "#c9a84c", textDecoration: "none" }}
+              className="hover:underline">
               Зареєструватися
             </Link>
           </p>

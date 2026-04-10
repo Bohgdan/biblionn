@@ -29,7 +29,7 @@ export default function Navbar() {
         setUser(null);
       }
     }
-    loadUser();
+    void loadUser();
   }, []);
 
   async function handleLogout() {
@@ -39,86 +39,133 @@ export default function Navbar() {
 
   return (
     <header
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
-      className="sticky top-0 z-50 bg-[#1a1f3c] shadow-[0_4px_14px_rgba(0,0,0,0.12)]"
+      style={{
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        height: "64px",
+      }}
+      className="sticky top-0 z-50 bg-[#1a1f3c]/95 shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
     >
-      <nav className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <nav
+        className="mx-auto flex h-full w-full max-w-7xl items-center px-6 lg:px-8"
+        style={{ gap: "1.5rem" }}
+      >
         {/* Logo */}
-        <Link href="/" className="inline-block">
+        <Link href="/" className="inline-flex items-center shrink-0" style={{ textDecoration: "none" }}>
+          <span
+            style={{
+              display: "inline-block",
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              backgroundColor: "#c9a84c",
+              marginRight: "6px",
+              flexShrink: 0,
+            }}
+          />
           <span
             style={{
               fontFamily: "var(--font-playfair)",
-              fontSize: "1.4rem",
+              fontSize: "1.6rem",
               fontWeight: 700,
               color: "white",
               letterSpacing: "-0.03em",
+              lineHeight: 1,
             }}
           >
-            📚 Biblion
+            Biblion
           </span>
         </Link>
 
         {/* Nav links */}
-        <div className="flex flex-wrap items-center gap-5 text-sm font-medium sm:text-base">
+        <div className="flex items-center" style={{ gap: "1.25rem" }}>
           {links.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                style={{ padding: "0.5rem 0", transition: "color 0.15s" }}
-                className={`border-b-2 ${
-                  isActive
-                    ? "border-[#c9a84c] text-[#c9a84c]"
-                    : "border-transparent text-white hover:text-[#c9a84c]"
-                }`}
+                className={`nav-link-anim${isActive ? " active" : ""}`}
+                style={{
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.02em",
+                  color: isActive ? "white" : "rgba(255,255,255,0.75)",
+                  fontWeight: isActive ? 600 : 400,
+                  padding: "0.35rem 0",
+                  textDecoration: "none",
+                }}
               >
                 {link.label}
               </Link>
             );
           })}
+
+          {/* My books — only when logged in */}
+          {user ? (
+            <Link
+              href="/my-books"
+              className={`nav-link-anim${pathname === "/my-books" ? " active" : ""}`}
+              style={{
+                fontSize: "0.9rem",
+                letterSpacing: "0.02em",
+                color: pathname === "/my-books" ? "white" : "rgba(255,255,255,0.75)",
+                fontWeight: pathname === "/my-books" ? 600 : 400,
+                padding: "0.35rem 0",
+                textDecoration: "none",
+              }}
+            >
+              Мої книги
+            </Link>
+          ) : null}
         </div>
 
-        {/* My books link — visible when logged in */}
-        {user ? (
-          <Link
-            href="/my-books"
-            style={{ padding: "0.5rem 0", transition: "color 0.15s" }}
-            className={`border-b-2 text-sm font-medium sm:text-base ${
-              pathname === "/my-books"
-                ? "border-[#c9a84c] text-[#c9a84c]"
-                : "border-transparent text-white hover:text-[#c9a84c]"
-            }`}
-          >
-            Мої книги
-          </Link>
-        ) : null}
+        {/* Spacer */}
+        <div style={{ flexGrow: 1 }} />
 
-        {/* Auth section — pushed to the right */}
-        <div className="ml-auto flex items-center gap-2">
+        {/* Auth section */}
+        <div className="flex items-center" style={{ gap: "8px" }}>
           {!user ? (
             <>
               <Link
                 href="/auth/login"
-                className="rounded-[20px] border border-white/30 px-4 py-1.5 text-[0.9rem] text-white transition-colors hover:bg-white/10"
+                style={{
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  color: "white",
+                  padding: "8px 20px",
+                  borderRadius: "24px",
+                  fontSize: "0.85rem",
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}
+                className="transition-all hover:border-white hover:bg-white/[0.08]"
               >
                 Увійти
               </Link>
               <Link
                 href="/auth/register"
-                className="rounded-[20px] bg-[#c9a84c] px-4 py-1.5 text-[0.9rem] font-semibold text-[#1a1f3c] transition-colors hover:bg-white"
+                style={{
+                  background: "#c9a84c",
+                  color: "#1a1f3c",
+                  padding: "8px 20px",
+                  borderRadius: "24px",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}
+                className="transition-all hover:bg-white"
               >
                 Реєстрація
               </Link>
             </>
           ) : (
-            <div className="flex items-center gap-3">
-              {/* Avatar circle */}
-              <div className="flex items-center gap-2">
+            <div className="flex items-center" style={{ gap: "10px" }}>
+              <div className="flex items-center" style={{ gap: "8px" }}>
                 <div
                   style={{
-                    width: "32px",
-                    height: "32px",
+                    width: "36px",
+                    height: "36px",
                     borderRadius: "50%",
                     backgroundColor: "#c9a84c",
                     color: "#1a1f3c",
@@ -126,18 +173,28 @@ export default function Navbar() {
                     alignItems: "center",
                     justifyContent: "center",
                     fontWeight: 700,
-                    fontSize: "0.85rem",
+                    fontSize: "0.9rem",
                     flexShrink: 0,
                   }}
                 >
                   {user.name[0].toUpperCase()}
                 </div>
-                <span className="text-[0.9rem] text-white">{user.name}</span>
+                <span style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.9rem" }}>
+                  {user.name}
+                </span>
               </div>
               <button
                 type="button"
-                onClick={handleLogout}
-                className="rounded-[20px] border border-white/30 px-4 py-1.5 text-[0.85rem] text-white transition-colors hover:bg-white/10"
+                onClick={() => void handleLogout()}
+                style={{
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  color: "white",
+                  padding: "8px 20px",
+                  borderRadius: "24px",
+                  fontSize: "0.85rem",
+                  background: "transparent",
+                }}
+                className="transition-all hover:border-white hover:bg-white/[0.08]"
               >
                 Вийти
               </button>
