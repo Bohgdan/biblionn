@@ -79,6 +79,21 @@ export default function Navbar() {
           })}
         </div>
 
+        {/* My books link — visible when logged in */}
+        {user ? (
+          <Link
+            href="/my-books"
+            style={{ padding: "0.5rem 0", transition: "color 0.15s" }}
+            className={`border-b-2 text-sm font-medium sm:text-base ${
+              pathname === "/my-books"
+                ? "border-[#c9a84c] text-[#c9a84c]"
+                : "border-transparent text-white hover:text-[#c9a84c]"
+            }`}
+          >
+            Мої книги
+          </Link>
+        ) : null}
+
         {/* Auth section — pushed to the right */}
         <div className="ml-auto flex items-center gap-2">
           {!user ? (

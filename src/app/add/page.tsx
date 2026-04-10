@@ -2,7 +2,21 @@
 
 import { FormEvent, useState } from "react";
 
+type GoogleBookItem = {
+  volumeInfo: {
+    title?: string;
+    authors?: string[];
+    description?: string;
+    imageLinks?: { thumbnail?: string };
+  };
+};
+
 export default function AddBookPage() {
+  const [isbn, setIsbn] = useState("");
+  const [isbnLoading, setIsbnLoading] = useState(false);
+  const [isbnError, setIsbnError] = useState("");
+  const [isbnSuccess, setIsbnSuccess] = useState("");
+
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [price, setPrice] = useState("");
@@ -17,6 +31,52 @@ export default function AddBookPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [validationError, setValidationError] = useState("");
   const [serverError, setServerError] = useState("");
+
+  async function handleIsbnSearch() {
+    if (!isbn.trim()) return;
+    setIsbnLoading(true);
+    setIsbnError("");
+    setIsbnSuccess("");
+
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn.trim()}`
+      );
+      const data = (await res.json()) as { items?: GoogleBookItem[] };
+
+      if (!data.items || data.items.length === 0) {
+        setIsbnError("Книгу не знайдено. Введіть дані вручну.");
+      } else {
+        const info = data.items[0].volumeInfo;
+        setTitle(info.title ?? "");
+        setAuthor(info.authors?.[0] ?? "");
+        setDescription(info.description ?? "");
+
+        const thumbnailUrl = info.imageLinks?.thumbnail;
+        if (thumbnailUrl) {
+          try {
+            const imgRes = await fetch(thumbnailUrl);
+            const blob = await imgRes.blob();
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64 = reader.result as string;
+              setImageFile(base64);
+              setImagePreview(base64);
+            };
+            reader.readAsDataURL(blob);
+          } catch {
+            // thumbnail fetch failed — not critical
+          }
+        }
+
+        setIsbnSuccess("Книгу знайдено! Перевірте дані.");
+      }
+    } catch {
+      setIsbnError("Помилка пошуку. Спробуйте ще раз.");
+    } finally {
+      setIsbnLoading(false);
+    }
+  }
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -52,7 +112,7 @@ export default function AddBookPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ data: imageFile }),
         });
-        const uploadData = await uploadRes.json() as { url: string };
+        const uploadData = (await uploadRes.json()) as { url: string };
         imageUrl = uploadData.url;
         setUploading(false);
       }
@@ -72,9 +132,7 @@ export default function AddBookPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("server error");
-      }
+      if (!response.ok) throw new Error("server error");
 
       setIsSuccess(true);
     } catch {
@@ -85,7 +143,8 @@ export default function AddBookPage() {
     }
   }
 
-  const labelClass = "mb-2 block text-xs font-bold uppercase tracking-wide text-[#1a1f3c]";
+  const labelClass =
+    "mb-2 block text-xs font-bold uppercase tracking-wide text-[#1a1f3c]";
   const inputClass =
     "w-full rounded-[8px] border border-[#d1c9b8] px-[14px] py-[10px] text-base focus:border-[#c9a84c] focus:outline-none focus:ring-0 focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]";
 
@@ -124,33 +183,138 @@ export default function AddBookPage() {
 
             <form className="space-y-5" onSubmit={handleSubmit}>
               {serverError ? (
-                <div className="rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{serverError}</div>
+                <div className="rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">
+                  {serverError}
+                </div>
               ) : null}
-              {validationError ? <p className="text-sm text-red-600">{validationError}</p> : null}
+              {validationError ? (
+                <p className="text-sm text-red-600">{validationError}</p>
+              ) : null}
 
+              {/* ISBN Search */}
               <div>
-                <label className={labelClass} htmlFor="title">Назва книги*</label>
-                <input id="title" type="text" className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} />
+                <label className={labelClass} htmlFor="isbn">
+                  ISBN (необов&apos;язково)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="isbn"
+                    type="text"
+                    placeholder="978-..."
+                    style={{ flex: 1 }}
+                    className="rounded-[8px] border border-[#d1c9b8] px-[14px] py-[10px] text-base focus:border-[#c9a84c] focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]"
+                    value={isbn}
+                    onChange={(e) => setIsbn(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        void handleIsbnSearch();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    disabled={isbnLoading}
+                    onClick={() => void handleIsbnSearch()}
+                    style={{
+                      background: "#c9a84c",
+                      color: "#1a1f3c",
+                      padding: "10px 20px",
+                      borderRadius: "8px",
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                      border: "none",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      opacity: isbnLoading ? 0.7 : 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#1a1f3c";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "white";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#c9a84c";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "#1a1f3c";
+                    }}
+                  >
+                    {isbnLoading ? "Шукаємо..." : "Знайти книгу"}
+                  </button>
+                </div>
+                {isbnError ? (
+                  <p className="mt-1 text-xs text-red-600">{isbnError}</p>
+                ) : null}
+                {isbnSuccess ? (
+                  <p className="mt-1 text-xs text-green-700">{isbnSuccess}</p>
+                ) : null}
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="author">Автор*</label>
-                <input id="author" type="text" className={inputClass} value={author} onChange={(e) => setAuthor(e.target.value)} />
+                <label className={labelClass} htmlFor="title">
+                  Назва книги*
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  className={inputClass}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="price">Ціна (₴)*</label>
-                <input id="price" type="number" min={0} className={inputClass} value={price} onChange={(e) => setPrice(e.target.value)} />
+                <label className={labelClass} htmlFor="author">
+                  Автор*
+                </label>
+                <input
+                  id="author"
+                  type="text"
+                  className={inputClass}
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="description">Опис</label>
-                <textarea id="description" rows={4} className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
+                <label className={labelClass} htmlFor="price">
+                  Ціна (₴)*
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  min={0}
+                  className={inputClass}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="condition">Стан книги*</label>
-                <select id="condition" className={inputClass} value={condition} onChange={(e) => setCondition(e.target.value)}>
+                <label className={labelClass} htmlFor="description">
+                  Опис
+                </label>
+                <textarea
+                  id="description"
+                  rows={4}
+                  className={inputClass}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className={labelClass} htmlFor="condition">
+                  Стан книги*
+                </label>
+                <select
+                  id="condition"
+                  className={inputClass}
+                  value={condition}
+                  onChange={(e) => setCondition(e.target.value)}
+                >
                   <option value="Нова">Нова</option>
                   <option value="Як нова">Як нова</option>
                   <option value="Добрий">Добрий</option>
@@ -159,17 +323,35 @@ export default function AddBookPage() {
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="contactEmail">Контактний email*</label>
-                <input id="contactEmail" type="email" className={inputClass} value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
+                <label className={labelClass} htmlFor="contactEmail">
+                  Контактний email*
+                </label>
+                <input
+                  id="contactEmail"
+                  type="email"
+                  className={inputClass}
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="contactPhone">Контактний телефон</label>
-                <input id="contactPhone" type="text" className={inputClass} value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+                <label className={labelClass} htmlFor="contactPhone">
+                  Контактний телефон
+                </label>
+                <input
+                  id="contactPhone"
+                  type="text"
+                  className={inputClass}
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                />
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="image">Фото книги</label>
+                <label className={labelClass} htmlFor="image">
+                  Фото книги
+                </label>
                 <input
                   id="image"
                   type="file"
@@ -183,7 +365,12 @@ export default function AddBookPage() {
                     <img
                       src={imagePreview}
                       alt="Попередній перегляд"
-                      style={{ height: "200px", width: "100%", objectFit: "cover", borderRadius: "8px" }}
+                      style={{
+                        height: "200px",
+                        width: "100%",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
                     />
                   </div>
                 ) : null}
