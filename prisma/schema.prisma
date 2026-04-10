@@ -20,6 +20,7 @@ model Book {
   contactEmail    String?
   contactPhone    String?
   images          String
+  imageUrl        String?
   sellerEmail     String
   sellerInstagram String
   validationLink  String   @unique @default(cuid())

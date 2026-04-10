@@ -8,6 +8,7 @@ type Book = {
   authors?: string;
   price: number;
   condition: string;
+  imageUrl?: string | null;
 };
 
 async function getBooks(): Promise<Book[]> {
@@ -119,6 +120,7 @@ export default async function HomePage() {
                   author={book.author ?? book.authors ?? "Невідомий автор"}
                   price={book.price}
                   condition={book.condition}
+                  imageUrl={book.imageUrl}
                 />
               ))}
             </div>

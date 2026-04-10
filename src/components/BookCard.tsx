@@ -6,6 +6,7 @@ type BookCardProps = {
   author: string;
   price: number;
   condition: string;
+  imageUrl?: string | null;
 };
 
 function getConditionBadge(condition: string) {
@@ -16,7 +17,7 @@ function getConditionBadge(condition: string) {
   return { bg: "#f3f4f6", color: "#374151" };
 }
 
-export default function BookCard({ id, title, author, price, condition }: BookCardProps) {
+export default function BookCard({ id, title, author, price, condition, imageUrl }: BookCardProps) {
   const badge = getConditionBadge(condition);
 
   return (
@@ -46,7 +47,16 @@ export default function BookCard({ id, title, author, price, condition }: BookCa
             position: "relative",
           }}
         >
-          <span style={{ fontSize: "4rem" }}>📖</span>
+          {imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageUrl}
+              alt={title}
+              style={{ width: "100%", height: "220px", objectFit: "cover" }}
+            />
+          ) : (
+            <span style={{ fontSize: "4rem" }}>📖</span>
+          )}
 
           {/* Condition badge */}
           <span

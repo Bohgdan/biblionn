@@ -13,6 +13,7 @@ type Book = {
   condition: string;
   language: string;
   images: string;
+  imageUrl?: string | null;
 };
 
 function SkeletonCard() {
@@ -74,8 +75,9 @@ export default function BookList() {
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
       {books.map((book) => (
         <BookCard key={book.id} id={book.id} title={book.title}
-            author={book.authors ?? ""} 
-            price={book.price} condition={book.condition ?? ""} />
+            author={book.authors ?? ""}
+            price={book.price} condition={book.condition ?? ""}
+            imageUrl={book.imageUrl} />
       ))}
     </div>
   );

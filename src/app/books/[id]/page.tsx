@@ -10,6 +10,7 @@ type Book = {
   description?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
+  imageUrl?: string | null;
 };
 
 function getConditionStyles(condition: string) {
@@ -58,9 +59,18 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
         <article className="flex flex-col gap-8 rounded-2xl bg-white p-8 shadow-[0_12px_32px_rgba(0,0,0,0.1)] md:flex-row">
           <section className="md:basis-[280px] md:shrink-0">
-            <div className="flex h-[380px] items-center justify-center rounded-xl bg-[#1a1f3c] text-[5rem]">
-              📖
-            </div>
+            {book.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={book.imageUrl}
+                alt={book.title}
+                style={{ width: "100%", height: "380px", objectFit: "cover", borderRadius: "12px" }}
+              />
+            ) : (
+              <div className="flex h-[380px] items-center justify-center rounded-xl bg-[#1a1f3c] text-[5rem]">
+                📖
+              </div>
+            )}
             <div
               className="mt-4 inline-block rounded-full px-3 py-1 text-[0.8rem] font-semibold"
               style={{ backgroundColor: badgeStyles.background, color: badgeStyles.color }}
