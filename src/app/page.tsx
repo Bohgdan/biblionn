@@ -11,8 +11,8 @@ type Book = {
 };
 
 async function getBooks(): Promise<Book[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000";
-  const response = await fetch(`${baseUrl}/api/books`, { cache: "no-store" });
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://biblionn.vercel.app';
+  const response = await fetch(`${baseUrl}/api/books`, { cache: 'no-store' });
 
   if (!response.ok) {
     return [];
