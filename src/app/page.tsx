@@ -101,12 +101,12 @@ export default function HomePage() {
       <section
         style={{
           background: "linear-gradient(135deg, #1a1f3c 0%, #2d3561 50%, #1a1f3c 100%)",
-          minHeight: "80vh",
+          minHeight: "60vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          padding: "4rem 2rem 6rem",
+          padding: "4rem 2rem 5rem",
         }}
       >
         <div style={{ maxWidth: "800px", width: "100%" }}>

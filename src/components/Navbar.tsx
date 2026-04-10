@@ -60,17 +60,17 @@ export default function Navbar() {
               height: "6px",
               borderRadius: "50%",
               backgroundColor: "#c9a84c",
-              marginRight: "6px",
+              marginRight: "7px",
               flexShrink: 0,
             }}
           />
           <span
             style={{
               fontFamily: "var(--font-playfair)",
-              fontSize: "1.6rem",
+              fontSize: "1.5rem",
               fontWeight: 700,
               color: "white",
-              letterSpacing: "-0.03em",
+              letterSpacing: "-0.02em",
               lineHeight: 1,
             }}
           >
@@ -90,7 +90,7 @@ export default function Navbar() {
                 style={{
                   fontSize: "0.9rem",
                   letterSpacing: "0.02em",
-                  color: isActive ? "white" : "rgba(255,255,255,0.75)",
+                  color: isActive ? "#c9a84c" : "rgba(255,255,255,0.75)",
                   fontWeight: isActive ? 600 : 400,
                   padding: "0.35rem 0",
                   textDecoration: "none",
@@ -109,7 +109,7 @@ export default function Navbar() {
               style={{
                 fontSize: "0.9rem",
                 letterSpacing: "0.02em",
-                color: pathname === "/my-books" ? "white" : "rgba(255,255,255,0.75)",
+                color: pathname === "/my-books" ? "#c9a84c" : "rgba(255,255,255,0.75)",
                 fontWeight: pathname === "/my-books" ? 600 : 400,
                 padding: "0.35rem 0",
                 textDecoration: "none",

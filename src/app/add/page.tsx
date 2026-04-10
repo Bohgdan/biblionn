@@ -26,6 +26,7 @@ export default function AddBookPage() {
   const [contactPhone, setContactPhone] = useState("");
   const [imageFile, setImageFile] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFileName, setImageFileName] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -81,6 +82,7 @@ export default function AddBookPage() {
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImageFileName(file.name);
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result as string;
@@ -349,16 +351,45 @@ export default function AddBookPage() {
               </div>
 
               <div>
-                <label className={labelClass} htmlFor="image">
-                  Фото книги
-                </label>
+                <p className={labelClass}>Фото книги</p>
+                {/* Hidden real input */}
                 <input
                   id="image"
                   type="file"
                   accept="image/*"
-                  className="w-full cursor-pointer rounded-[8px] border border-[#d1c9b8] px-[14px] py-[10px] text-base text-gray-600 file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[#1a1f3c] file:px-3 file:py-1 file:text-sm file:text-white"
+                  style={{ display: "none" }}
                   onChange={handleImageChange}
                 />
+                {/* Custom label-as-button */}
+                <label
+                  htmlFor="image"
+                  style={{
+                    display: "block",
+                    border: "2px dashed #d1c9b8",
+                    borderRadius: "12px",
+                    padding: "1.5rem",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    width: "100%",
+                    background: "#fafaf9",
+                    color: "#6b7280",
+                    fontSize: "0.95rem",
+                    transition: "border-color 0.2s, color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLLabelElement).style.borderColor = "#c9a84c";
+                    (e.currentTarget as HTMLLabelElement).style.color = "#c9a84c";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLLabelElement).style.borderColor = imageFileName ? "#c9a84c" : "#d1c9b8";
+                    (e.currentTarget as HTMLLabelElement).style.color = imageFileName ? "#c9a84c" : "#6b7280";
+                  }}
+                >
+                  📎 Вибрати фото
+                </label>
+                {imageFileName ? (
+                  <p className="mt-2 text-sm text-green-700">✅ {imageFileName}</p>
+                ) : null}
                 {imagePreview ? (
                   <div className="mt-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
